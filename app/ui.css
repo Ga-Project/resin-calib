@@ -1,0 +1,563 @@
+/* resin-calib — 製品固有の追加スタイル。
+ * 方針: globals.css の構造クラス（.btn / .card / .hero / .badge …）の見た目は書き換えない。
+ * ここは globals に無い新規コンポーネント（フォームグリッド・単位接尾・セグメント・比較表・
+ * トースト 等）だけを、すべて既存トークン（var(--…)）で組み立てる。
+ */
+
+/* ===== 汎用ユーティリティ ===== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.text-dim {
+  color: var(--text-dim);
+}
+
+/* ===== ツールバー（件数チップ + 書き出し/読み込み） ===== */
+.tool-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4) 0;
+  margin-top: var(--sp-8);
+  border-top: 1px solid var(--border);
+}
+.tool-bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.count-chip {
+  font-size: var(--fs-sm);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ===== セクション ===== */
+.tool-section {
+  padding-block: var(--sp-12);
+  border-bottom: 1px solid var(--border);
+}
+.section-lead {
+  color: var(--text-soft);
+  max-width: 60ch;
+  margin-top: var(--sp-2);
+  margin-bottom: var(--sp-6);
+}
+
+/* ===== フォーム ===== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--sp-5);
+}
+.field-group {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-5);
+  margin-top: var(--sp-5);
+  min-inline-size: 0; /* fieldset の grid 子要素はみ出し防止 */
+}
+.field-group:first-of-type {
+  margin-top: 0;
+}
+.field-group > legend {
+  padding: 0 var(--sp-2);
+  margin-left: calc(var(--sp-2) * -1);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--accent);
+  letter-spacing: var(--tracking-snug);
+}
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+}
+
+/* 入力末尾の単位接尾（°C / mm / s / 層） */
+.with-unit {
+  position: relative;
+}
+.with-unit > input {
+  padding-right: 2.6rem;
+}
+.with-unit .unit {
+  position: absolute;
+  top: 50%;
+  right: var(--sp-3);
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  font-size: var(--fs-sm);
+  pointer-events: none;
+}
+
+/* ===== RERF 推定 ===== */
+.rerf {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+.rerf-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+  gap: var(--sp-6);
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .rerf-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.rerf-result {
+  position: sticky;
+  top: calc(var(--header-h) + var(--sp-4));
+}
+@media (max-width: 860px) {
+  .rerf-result {
+    position: static;
+  }
+}
+
+.rerf-rows {
+  list-style: none;
+  padding: 0;
+  margin: var(--sp-4) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.rerf-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.rerf-row.is-rec {
+  background: var(--accent-tint);
+  border-color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.rerf-exp {
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-md);
+  min-width: 4.5ch;
+}
+.unit-inline {
+  font-size: var(--fs-xs);
+  color: var(--text-dim);
+  margin-left: 1px;
+}
+.rerf-step-label {
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+}
+.rerf-rec-badge {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* セグメントコントロール（未硬化 / 良好 / 過硬化） */
+.seg {
+  display: inline-flex;
+  gap: var(--sp-1);
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+.seg-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  min-height: 44px;
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    color var(--transition);
+}
+.seg-opt input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.seg-icon {
+  display: inline-flex;
+  font-size: 1.1em;
+}
+/* 状態ごとにアイコンを色分け（ただし形 + ラベルでも判別可能＝色だけに頼らない） */
+.seg-under .seg-icon {
+  color: var(--text-dim);
+}
+.seg-good .seg-icon {
+  color: var(--ok);
+}
+.seg-over .seg-icon {
+  color: var(--err);
+}
+.seg-opt:hover {
+  border-color: var(--accent);
+}
+.seg-opt:has(input:checked) {
+  background: var(--accent-tint);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: var(--fw-semibold);
+}
+.seg-opt:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* 推奨結果カード */
+.result-value {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: clamp(2.4rem, 8vw, 3.4rem);
+  line-height: 1.05;
+  color: var(--accent);
+  margin: var(--sp-2) 0 0;
+}
+.result-unit {
+  font-size: 0.42em;
+  font-weight: var(--fw-bold);
+  color: var(--text-dim);
+  margin-left: 0.15em;
+}
+.result-band {
+  font-size: var(--fs-sm);
+  color: var(--text-soft);
+  margin-top: var(--sp-2);
+}
+.result-note {
+  font-size: var(--fs-sm);
+  color: var(--text-dim);
+  margin: var(--sp-3) 0 var(--sp-5);
+}
+
+/* ===== プロファイル一覧 ===== */
+.profiles {
+  margin-top: var(--sp-2);
+}
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: flex-end;
+}
+.search-field {
+  position: relative;
+  flex: 1 1 18rem;
+}
+.search-field input[type="search"] {
+  padding-left: 2.6rem;
+}
+.search-icon {
+  position: absolute;
+  left: var(--sp-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  pointer-events: none;
+  font-size: 1.1em;
+}
+.filter-select {
+  flex: 0 1 13rem;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  min-height: 40px;
+  padding: var(--sp-1) var(--sp-2) var(--sp-1) var(--sp-3);
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: pointer;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  border: 1px solid var(--border);
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+}
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.chip svg {
+  font-size: 1.1em;
+}
+.btn-clear {
+  min-height: 40px;
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--fs-sm);
+}
+.result-count {
+  margin-top: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+.result-count .text-dim {
+  margin-left: var(--sp-1);
+}
+
+.profile-card {
+  gap: var(--sp-4);
+}
+.profile-card.is-comparing {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.profile-head h3 {
+  margin: 0;
+  font-size: var(--fs-md);
+}
+.profile-resin {
+  margin-top: var(--sp-1);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+/* profile-card の値バッジはユーザー入力（レジン種別・単位値）を含むため、
+   globals の .badge の uppercase 化を解除し原文の字面を保つ（"ABS-Like"/"0.05mm" を守る）。 */
+.badge-row .badge {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.param-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-2) var(--sp-4);
+  margin: 0;
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.param-grid > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+.param-grid dt {
+  color: var(--text-dim);
+  font-size: var(--fs-sm);
+}
+.param-grid dd {
+  margin: 0;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+}
+.profile-note {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-soft);
+  line-height: 1.55;
+}
+.profile-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: auto;
+  padding-top: var(--sp-2);
+}
+.profile-date {
+  font-size: var(--fs-xs);
+}
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.compare-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding-inline: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+.compare-toggle input {
+  width: 1.1rem;
+  height: 1.1rem;
+  min-height: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.btn-icon {
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--sp-2);
+  font-size: 1.2rem;
+}
+
+/* ===== 比較表 ===== */
+.compare {
+  margin-top: var(--sp-12);
+  padding-top: var(--sp-8);
+  border-top: 1px solid var(--border);
+}
+.compare h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: 0;
+}
+.compare-scroll {
+  overflow-x: auto;
+  margin-top: var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+.compare-table th,
+.compare-table td {
+  padding: var(--sp-3) var(--sp-4);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.compare-table thead th {
+  background: var(--surface-2);
+  font-weight: var(--fw-bold);
+  vertical-align: bottom;
+}
+.compare-table tbody th {
+  background: var(--surface);
+  color: var(--text-soft);
+  font-weight: var(--fw-semibold);
+  position: sticky;
+  left: 0;
+}
+.th-sub {
+  display: block;
+  font-weight: var(--fw-normal);
+  font-size: var(--fs-xs);
+  color: var(--text-dim);
+}
+.diff-flag {
+  display: inline-block;
+  margin-left: var(--sp-2);
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--warn-tint);
+  color: var(--warn);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0;
+}
+.diff-cell {
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-weight: var(--fw-semibold);
+}
+.diff-mark {
+  font-size: 0.85em;
+  margin-left: 2px;
+}
+
+/* ===== header nav ===== */
+.header-nav {
+  display: flex;
+  gap: var(--sp-1);
+}
+@media (max-width: 560px) {
+  .header-nav {
+    display: none; /* 狭幅では非表示。hero CTA とツールバーで到達できる */
+  }
+}
+
+/* ===== skeleton card ===== */
+.skeleton-card {
+  gap: var(--sp-4);
+}
+
+/* ===== footer ===== */
+.footer-notes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  max-width: 70ch;
+}
+.footer-notes p {
+  margin: 0;
+  line-height: 1.6;
+}
+.footer-notes strong {
+  color: var(--text-soft);
+}
+.footer-copy {
+  margin-top: var(--sp-6);
+}
+
+/* ===== トースト ===== */
+.toast-area {
+  position: fixed;
+  inset-block-end: var(--sp-6);
+  inset-inline: 0;
+  display: flex;
+  justify-content: center;
+  padding-inline: var(--sp-4);
+  pointer-events: none;
+  z-index: 80;
+}
+.toast {
+  pointer-events: auto;
+  box-shadow: var(--shadow-lg);
+  max-width: 32rem;
+  animation: toast-in 0.24s var(--ease);
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}

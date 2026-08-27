@@ -6,13 +6,18 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # main へ入る前に同じ検査を通す。公開の瞬間がゲートの初走行、という状態を避ける。
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 # 最小権限。書き込みが要るのは deploy job のみ（下で job 単位に付与）。
 permissions:
   contents: read
 
+# PR の検査実行が main の公開実行を巻き込んで打ち切らないよう、ref ごとに分ける。
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -70,6 +75,8 @@ jobs:
   deploy:
     name: Deploy
     needs: build
+    # 公開は main への push のときだけ。pull_request では検査までで止める。
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read

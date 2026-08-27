@@ -47,10 +47,11 @@ pnpm verify                # 公開と同じ env でビルドしてから全テ�
 素の `pnpm build && pnpm test` は使わない。`PAGES_BASE_PATH` を渡さずにビルドすると
 公開 URL から `/resin-calib` が落ち、計測タグも出ないため、**製品は壊れていないのに
 検査だけが赤くなる**（og:image・sitemap と canonical の一致・計測タグの3件）。
-手元と CI が同じ 1 コマンドを実行するよう `verify` に寄せてある。
+手元は `pnpm verify` 一本で CI と同じ検査（typecheck → lint → build → test）を通す。
+CI はこれに `secret scan` を先頭で足し、どの検査で落ちたかが Actions 上で切り分けられる
+よう、同じ内容を段階に分けて実行する。どれかが落ちれば公開へ進まない。
 
-CI は `secret scan → typecheck → lint → build → test` の順で通し、どれかが落ちれば
-公開へ進まない。
+テストは `test/*.test.mjs` だけが走る。この命名から外れたファイルは黙って実行されない。
 
 - `test/exposure.test.mjs` … RERF からの推奨露光時間の推定ロジック
 - `test/storage.test.mjs` … 永続化（正規化 / シリアライズ / インポート）

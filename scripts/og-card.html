@@ -67,7 +67,7 @@
      荒れる、過硬化は硬化が回り込んで穴が埋まる。ぼかし（光学の語彙）は使わない。
      良好域は帯として示し、その下限に「推奨」を置く＝ app/lib/exposure.mjs が
      「確実に硬化した中で最も短い露光」を推奨するのと同じ判定則にする。 */
-  .ladder { position: absolute; top: 282px; left: 64px; right: 64px; height: 226px; }
+  .ladder { position: absolute; top: 282px; left: 64px; right: 64px; height: 232px; }
 
   .row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 24px; }
 
@@ -80,7 +80,7 @@
     border: 1px solid hsl(288 60% 66% / .5);
     border-radius: 999px; padding: 3px 14px; line-height: 1.25;
   }
-  .rec span { display: block; font-size: 12px; line-height: 1; color: hsl(288 70% 72%); }
+  .rec span { display: block; font-size: 17px; line-height: 1; color: hsl(288 70% 72%); }
 
   .tiles { position: relative; margin-top: 6px; }
 
@@ -111,13 +111,13 @@
   .chip i { display: block; border-radius: 50%; background: hsl(250 30% 12%); width: 18px; height: 18px; }
 
   /* 硬化不足: 材料が立ち上がらず縁が荒れ、穴が大きすぎる。面も痩せる。 */
-  .u3 .chip { opacity: .58; border-style: dashed; border-color: hsl(288 18% 58% / .38);
+  .u3 .chip { opacity: .58; border-style: dashed; border-color: hsl(288 22% 72% / .72);
               background: linear-gradient(160deg, hsl(262 12% 30%), hsl(256 12% 22%)); }
   .u3 .chip i { width: 26px; height: 26px; }
-  .u2 .chip { opacity: .74; border-style: dashed; border-color: hsl(288 20% 60% / .42);
+  .u2 .chip { opacity: .74; border-style: dashed; border-color: hsl(288 22% 72% / .66);
               background: linear-gradient(160deg, hsl(264 16% 31%), hsl(257 16% 23%)); }
   .u2 .chip i { width: 23px; height: 23px; }
-  .u1 .chip { opacity: .88; border-style: dashed; border-color: hsl(288 24% 62% / .46); }
+  .u1 .chip { opacity: .88; border-style: dashed; border-color: hsl(288 24% 70% / .58); }
   .u1 .chip i { width: 20px; height: 20px; }
 
   /* 良好域。下限（推奨）だけ縁を立てる。 */
@@ -156,7 +156,7 @@
 
   /* --- 下段: 前提 -------------------------------------------------------- */
   .foot {
-    position: absolute; left: 64px; bottom: 44px;
+    position: absolute; left: 64px; bottom: 38px;
     display: flex; align-items: center; gap: 12px;
   }
   .pill {

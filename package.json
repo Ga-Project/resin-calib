@@ -9,7 +9,7 @@
     "lint": "next lint --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test": "node --test test/*.test.mjs",
-    "verify": "PAGES_BASE_PATH=/resin-calib NEXT_PUBLIC_GOATCOUNTER_CODE=ga-project next build && node --test test/*.test.mjs"
+    "verify": "pnpm typecheck && pnpm lint && PAGES_BASE_PATH=/resin-calib NEXT_PUBLIC_GOATCOUNTER_CODE=ga-project next build && node --test test/*.test.mjs"
   },
   "dependencies": {
     "next": "^14.2.0",

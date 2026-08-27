@@ -22,7 +22,9 @@ fi
 # 検査は書き出しと同じビューポートで行う（違うと検査と本番でレイアウトがズレる）。
 # --dump-dom には検査スクリプト自身のソースも含まれるので、結果は必ず
 # div#overflow-report の中身だけを取り出す（ソース中の文字列を拾わないため）。
+# 配色は書き出し側と同じ light 固定にする。違うと検査と本番でレイアウトが分岐しうる。
 report=$("$CHROME" --headless=new --disable-gpu --virtual-time-budget=3000 \
+  --blink-settings=preferredColorScheme=1 \
   --window-size=1200,630 --dump-dom scripts/og-card.html 2>/dev/null \
   | sed -n 's/.*id="overflow-report"[^>]*>\([^<]*\)<.*/\1/p' | head -1)
 
@@ -66,11 +68,16 @@ if [ "$bytes" -lt 50000 ]; then
   exit 1
 fi
 
-# 原版のハッシュを原版の隣に置く。og-card.html を直したのに書き出しを忘れると
-# （＝古い PNG が公開され続けると）ここがズレるので、test/guards.test.mjs が検出する。
+# 原版と書き出しの両方のハッシュを原版の隣に置く。test/guards.test.mjs が突き合わせる。
 # macOS のフォントに依存するため CI で PNG を再生成して比較することはできない。
 # public/ ではなく scripts/ に置く: これは開発用の不変量で、公開物に混ぜる理由がない。
+#
+# 2つ記録するのは、塞ぐ穴が2つあるため:
+#   html のハッシュ … og-card.html を直したのに書き出しを忘れた（古い PNG が残る）
+#   png のハッシュ  … 書き出したが public/og.png をコミットし忘れた（scripts/ だけ更新され、
+#                     html どうしの比較では緑になってしまう）
 shasum -a 256 scripts/og-card.html | awk '{print $1}' > scripts/og-card.html.sha256
+shasum -a 256 public/og.png       | awk '{print $1}' > scripts/og-card.png.sha256
 
 echo "書き出しました: public/og.png (${width}x${height}, ${bytes} bytes)"
 echo "※ 拡大して目視で確認してください:"

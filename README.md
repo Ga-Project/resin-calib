@@ -38,12 +38,19 @@ PAGES_BASE_PATH=/resin-calib NEXT_PUBLIC_GOATCOUNTER_CODE=ga-project pnpm build
 ## テスト
 
 ```bash
-pnpm build && pnpm test    # ← この順で実行する
+pnpm verify                # 公開と同じ env でビルドしてから全テストを走らせる
 ```
 
-`test/guards.test.mjs` は書き出した `out/` を検査するので、**先に `pnpm build` が要る**
+`test/guards.test.mjs` は書き出した `out/` を検査するので、**ビルドが先に要る**
 （`out/` が無ければ「ビルドしていないから緑」にならないよう、明示的に失敗する）。
-CI も `typecheck → lint → build → test` の順で通し、どれかが落ちれば公開へ進まない。
+
+素の `pnpm build && pnpm test` は使わない。`PAGES_BASE_PATH` を渡さずにビルドすると
+公開 URL から `/resin-calib` が落ち、計測タグも出ないため、**製品は壊れていないのに
+検査だけが赤くなる**（og:image・sitemap と canonical の一致・計測タグの3件）。
+手元と CI が同じ 1 コマンドを実行するよう `verify` に寄せてある。
+
+CI は `secret scan → typecheck → lint → build → test` の順で通し、どれかが落ちれば
+公開へ進まない。
 
 - `test/exposure.test.mjs` … RERF からの推奨露光時間の推定ロジック
 - `test/storage.test.mjs` … 永続化（正規化 / シリアライズ / インポート）

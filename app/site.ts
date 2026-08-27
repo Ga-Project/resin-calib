@@ -18,3 +18,6 @@ export const SITE_URL = `https://ga-project.github.io${BASE_PATH}/`;
 // チャンクに残る」＝出力物の検査は緑のまま訪問者のブラウザで例外、という壊れ方をする。
 // client component から import すると process.env が空に置換され、basePath を落とした
 // 誤った URL（https://ga-project.github.io/og.png）が静かに出来上がる。
+// なお ssr:false の dynamic import 経由でも同じ結果になるかは未検証。その経路でも
+// SITE_URL の文字列は client chunk に焼かれるので、test/guards.test.mjs の
+// 「クライアントバンドルに公開 URL が焼き込まれていない」が最終的な網になる。

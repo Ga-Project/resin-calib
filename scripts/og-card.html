@@ -63,57 +63,96 @@
   .lead { margin-top: 18px; font-size: 24px; font-weight: 500; color: hsl(250 16% 76%); }
 
   /* --- 中段: RERF 露光ラダー -------------------------------------------- */
-  .ladder { position: absolute; top: 338px; left: 64px; right: 64px; height: 192px; }
+  /* 符号化は「穴の大きさ」1軸で通す。硬化不足は材料が立ち上がらず穴が大きく縁が
+     荒れる、過硬化は硬化が回り込んで穴が埋まる。ぼかし（光学の語彙）は使わない。
+     良好域は帯として示し、その下限に「推奨」を置く＝ app/lib/exposure.mjs が
+     「確実に硬化した中で最も短い露光」を推奨するのと同じ判定則にする。 */
+  .ladder { position: absolute; top: 282px; left: 64px; right: 64px; height: 226px; }
 
-  .tiles { display: flex; justify-content: space-between; align-items: flex-start; }
+  .row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 24px; }
 
-  .tile { width: 112px; }
+  /* 推奨の指し示し（良好域の下限＝4段目の上） */
+  .rec { grid-column: 4; text-align: center; }
+  .rec b {
+    display: inline-block; font-size: 21px; font-weight: 800; letter-spacing: .04em;
+    color: hsl(288 82% 80%);
+    background: hsl(288 60% 50% / .22);
+    border: 1px solid hsl(288 60% 66% / .5);
+    border-radius: 999px; padding: 3px 14px; line-height: 1.25;
+  }
+  .rec span { display: block; font-size: 12px; line-height: 1; color: hsl(288 70% 72%); }
 
-  /* 試験片。露光が足りないと縁が甘くなり、過ぎると太って細部が埋まる。 */
+  .tiles { position: relative; margin-top: 6px; }
+
+  /* 良好域の帯（4〜6段目の背後）。負マージンで枠外へ広げると、はみ出し検査に
+     引っかかるうえ実際に段の外へ滲む。セルの内側に収め、下の「良好域」ラベルと
+     同じ色味で縦に連なって見せる。 */
+  .band {
+    grid-row: 1; grid-column: 4 / 7; align-self: stretch;
+    border-radius: 12px;
+    background: hsl(288 55% 55% / .14);
+    border: 1px solid hsl(288 55% 66% / .34);
+  }
+
+  .tile { grid-row: 1; position: relative; }
+  .t1 { grid-column: 1; } .t2 { grid-column: 2; } .t3 { grid-column: 3; }
+  .t4 { grid-column: 4; } .t5 { grid-column: 5; } .t6 { grid-column: 6; }
+  .t7 { grid-column: 7; } .t8 { grid-column: 8; }
+
+  /* 試験片。 */
   .chip {
-    position: relative; width: 112px; height: 112px; border-radius: 10px;
+    position: relative; width: 100%; height: 86px; border-radius: 10px;
     background: linear-gradient(160deg, hsl(268 26% 34%), hsl(258 24% 24%));
     border: 1px solid hsl(288 30% 62% / .32);
-    display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
-    place-content: center; padding: 20px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    place-content: center; padding: 12px;
   }
   /* 細部（穴）。ここが読めるかどうかが RERF の判定そのもの。 */
-  .chip i { display: block; width: 22px; height: 22px; border-radius: 50%; background: hsl(250 30% 12%); }
+  .chip i { display: block; border-radius: 50%; background: hsl(250 30% 12%); width: 18px; height: 18px; }
 
-  /* 露光不足: 縁も穴も甘い */
-  .u3 .chip { filter: blur(2.6px) brightness(.62); opacity: .5; transform: scale(.9); }
-  .u2 .chip { filter: blur(1.5px) brightness(.76); opacity: .68; transform: scale(.95); }
-  .u1 .chip { filter: blur(.7px)  brightness(.9);  opacity: .85; transform: scale(.98); }
+  /* 硬化不足: 材料が立ち上がらず縁が荒れ、穴が大きすぎる。面も痩せる。 */
+  .u3 .chip { opacity: .58; border-style: dashed; border-color: hsl(288 18% 58% / .38);
+              background: linear-gradient(160deg, hsl(262 12% 30%), hsl(256 12% 22%)); }
+  .u3 .chip i { width: 26px; height: 26px; }
+  .u2 .chip { opacity: .74; border-style: dashed; border-color: hsl(288 20% 60% / .42);
+              background: linear-gradient(160deg, hsl(264 16% 31%), hsl(257 16% 23%)); }
+  .u2 .chip i { width: 23px; height: 23px; }
+  .u1 .chip { opacity: .88; border-style: dashed; border-color: hsl(288 24% 62% / .46); }
+  .u1 .chip i { width: 20px; height: 20px; }
 
-  /* 最適: 縁が立ち、穴が丸く抜ける */
-  .ok .chip {
-    border-color: hsl(288 80% 72%);
-    box-shadow: 0 0 0 3px hsl(288 78% 62% / .55), 0 0 34px hsl(288 80% 58% / .55);
+  /* 良好域。下限（推奨）だけ縁を立てる。 */
+  .g .chip {
     background: linear-gradient(160deg, hsl(288 34% 42%), hsl(272 30% 28%));
+    border-color: hsl(288 60% 68% / .6);
+  }
+  .g.rec-step .chip {
+    border-color: hsl(288 80% 74%);
+    box-shadow: 0 0 0 3px hsl(288 78% 62% / .5), 0 0 28px hsl(288 80% 58% / .45);
   }
 
-  /* 露光過多: 硬化が回り込み穴が埋まっていく */
-  .o1 .chip { filter: brightness(1.24) saturate(.8); }
-  .o1 .chip i { width: 17px; height: 17px; }
-  .o2 .chip { filter: brightness(1.5) saturate(.55); }
-  .o2 .chip i { width: 11px; height: 11px; }
-  .o3 .chip { filter: brightness(1.78) saturate(.3); }
-  .o3 .chip i { width: 5px; height: 5px; opacity: .5; }
-  .o4 .chip { filter: brightness(2.0) saturate(.14); }
-  .o4 .chip i { opacity: 0; }
+  /* 過硬化: 硬化が回り込んで穴が埋まり、縁が太る。輝度は上げすぎない
+     （失敗側がカードで最も明るい面になると視線の主役が入れ替わる）。 */
+  .o1 .chip { filter: brightness(1.16) saturate(.72); box-shadow: 0 0 0 2px hsl(288 12% 70% / .18); }
+  .o1 .chip i { width: 10px; height: 10px; }
+  .o2 .chip { filter: brightness(1.3) saturate(.5); box-shadow: 0 0 0 3px hsl(288 10% 72% / .2); }
+  .o2 .chip i { width: 4px; height: 4px; opacity: .45; }
 
   .sec {
-    margin-top: 14px; text-align: center;
+    margin-top: 10px; text-align: center;
     font-family: "SF Mono", Menlo, Consolas, monospace;
-    font-size: 21px; font-weight: 600; color: hsl(250 14% 62%);
+    font-size: 20px; font-weight: 600; color: hsl(250 14% 62%);
   }
-  .ok .sec { color: hsl(288 78% 78%); }
+  .g .sec { color: hsl(288 74% 80%); }
 
-  .badge {
-    margin-top: 7px; text-align: center;
-    font-size: 17px; font-weight: 700; letter-spacing: .06em;
-    color: hsl(288 80% 78%);
+  /* 帯の意味を名指しする。両端が何の失敗なのかを書かないと、単なる明度ランプに見える。 */
+  .zones { margin-top: 14px; }
+  .zone {
+    font-size: 20px; font-weight: 700; letter-spacing: .04em; text-align: center;
+    padding: 5px 0; border-radius: 8px;
   }
+  .z-under { grid-column: 1 / 4; color: hsl(250 14% 68%); background: hsl(250 20% 100% / .05); }
+  .z-good  { grid-column: 4 / 7; color: hsl(288 80% 80%); background: hsl(288 55% 55% / .16); }
+  .z-over  { grid-column: 7 / 9; color: hsl(250 14% 68%); background: hsl(250 20% 100% / .05); }
 
   /* --- 下段: 前提 -------------------------------------------------------- */
   .foot {
@@ -140,15 +179,26 @@
   </div>
 
   <div class="ladder">
-    <div class="tiles">
-      <div class="tile u3"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">1.6s</div></div>
-      <div class="tile u2"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">2.0s</div></div>
-      <div class="tile u1"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">2.4s</div></div>
-      <div class="tile ok"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">2.8s</div><div class="badge">最適</div></div>
-      <div class="tile o1"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">3.2s</div></div>
-      <div class="tile o2"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">3.6s</div></div>
-      <div class="tile o3"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">4.0s</div></div>
-      <div class="tile o4"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">4.4s</div></div>
+    <div class="row marks">
+      <div class="rec"><b>推奨</b><span>&#9660;</span></div>
+    </div>
+
+    <div class="row tiles">
+      <div class="band"></div>
+      <div class="tile t1 u3"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">1.6s</div></div>
+      <div class="tile t2 u2"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">2.0s</div></div>
+      <div class="tile t3 u1"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">2.4s</div></div>
+      <div class="tile t4 g rec-step"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">2.8s</div></div>
+      <div class="tile t5 g"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">3.2s</div></div>
+      <div class="tile t6 g"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">3.6s</div></div>
+      <div class="tile t7 o1"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">4.0s</div></div>
+      <div class="tile t8 o2"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">4.4s</div></div>
+    </div>
+
+    <div class="row zones">
+      <div class="zone z-under">未硬化</div>
+      <div class="zone z-good">良好域</div>
+      <div class="zone z-over">過硬化</div>
     </div>
   </div>
 
@@ -199,7 +249,21 @@
       }
     }
 
-    // --- 3. カード外への飛び出し ---
+    // --- 3. 段どうしの最小クリアランス ---
+    // 交差だけを見ていると 1px 空いていれば合格してしまう。実際には「重なってはいないが
+    // 詰まりすぎ」が目視で最も見落としやすい破綻なので、必要な余白そのものを表明する。
+    var MIN_GAP = 28;
+    var byTop = boxes.slice().sort(function (a, b) { return a.r.top - b.r.top; });
+    for (var k = 0; k + 1 < byTop.length; k++) {
+      var gap = byTop[k + 1].r.top - byTop[k].r.bottom;
+      // 小数の高さで 27.6px が "28px < 28px" と表示されないよう、丸め分だけ許容する。
+      if (gap < MIN_GAP - 0.5) {
+        bad.push("間隔不足 " + byTop[k].name + "→" + byTop[k + 1].name +
+                 "(" + gap.toFixed(1) + "px < " + MIN_GAP + "px)");
+      }
+    }
+
+    // --- 4. カード外への飛び出し ---
     boxes.forEach(function (b) {
       if (b.r.bottom > 631 || b.r.right > 1201 || b.r.top < -1 || b.r.left < -1) {
         bad.push("枠外 " + b.name + "(" + Math.round(b.r.left) + "," + Math.round(b.r.top) +

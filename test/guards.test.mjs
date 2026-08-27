@@ -20,7 +20,8 @@ const OUT = join(ROOT, "out");
 function requireBuild() {
   assert.ok(
     existsSync(join(OUT, "index.html")),
-    "out/index.html がありません。先に `pnpm build` を実行してください。",
+    "out/index.html がありません。先に `pnpm verify`（公開と同じ env でのビルド＋テスト）を実行してください。" +
+      " env 無しの `pnpm build` では公開 URL と計測タグが変わり、この検査は落ちます。",
   );
 }
 
@@ -91,15 +92,33 @@ test("共有カードは画像付きの大きなカードで出る", () => {
 // og-card.html を直したのに ./scripts/og-card.sh を流し忘れると、古い PNG が
 // 公開され続ける。PNG は macOS のフォントに依存し CI で再生成できないので、
 // 原版のハッシュを突き合わせて「書き出し忘れ」だけを検出する。
+const sha256 = (rel) => createHash("sha256").update(readFileSync(join(ROOT, rel))).digest("hex");
+const recordedSha = (rel) => readFileSync(join(ROOT, rel), "utf8").trim();
+
 test("public/og.png が scripts/og-card.html の現在の内容から書き出されている", () => {
-  const recorded = readFileSync(join(ROOT, "scripts/og-card.html.sha256"), "utf8").trim();
-  const actual = createHash("sha256")
-    .update(readFileSync(join(ROOT, "scripts/og-card.html")))
-    .digest("hex");
   assert.equal(
-    actual,
-    recorded,
+    sha256("scripts/og-card.html"),
+    recordedSha("scripts/og-card.html.sha256"),
     "og-card.html が変更されています。./scripts/og-card.sh を実行し public/og.png を一緒にコミットしてください。",
+  );
+});
+
+// html どうしの比較だけでは、書き出したのに public/og.png をコミットし忘れた場合
+// （scripts/ の更新だけが入る）を見逃す。配信される PNG そのものも突き合わせる。
+test("public/og.png が書き出した当時のものからすり替わっていない", () => {
+  assert.equal(
+    sha256("public/og.png"),
+    recordedSha("scripts/og-card.png.sha256"),
+    "public/og.png が記録と一致しません。./scripts/og-card.sh を実行し public/og.png も一緒にコミットしてください。",
+  );
+});
+
+// 配信物（out/）に入る PNG が、コミットした public/og.png と同一であること。
+test("out/og.png が public/og.png と同一", () => {
+  requireBuild();
+  assert.equal(
+    createHash("sha256").update(readFileSync(join(OUT, "og.png"))).digest("hex"),
+    sha256("public/og.png"),
   );
 });
 

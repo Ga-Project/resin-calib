@@ -13,8 +13,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: SITE_URL,
-      // Google が実際に見るのは lastModified。ビルド時刻を入れる。
-      lastModified: new Date(),
+      // lastModified は入れない。static export ではビルド時刻しか入れられず、README だけ
+      // 直したデプロイでも動く＝中身と無関係に「更新された」と言うことになる。
+      // 不正確な lastmod は検索エンジン側で無視されるので、書かない方が誠実。
       changeFrequency: "monthly",
       priority: 1,
     },

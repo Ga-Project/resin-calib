@@ -6,7 +6,7 @@ import "./globals.css";
 import "./theme.css";
 // この製品固有のコンポーネント追加スタイル（構造クラスは上書きせず、新規 UI のみ）。
 import "./ui.css";
-import { toJsonLd } from "../lib/json-ld.mjs";
+import { toJsonLd } from "./lib/json-ld.mjs";
 import { SITE_URL } from "./site";
 
 const SITE_NAME = "レジンキャリブ";
@@ -16,8 +16,10 @@ const DESCRIPTION =
 
 // 共有カード（1200×630）。原版は scripts/og-card.html、書き出し先が public/og.png。
 const OG_IMAGE = `${SITE_URL}og.png`;
+// 画像に何が写っているかを書く（製品の説明は og:description が持っている）。
+// ここが製品説明の重複だと、画像を見られない環境には情報が何も届かない。
 const OG_ALT =
-  "レジンキャリブ — 機種・レジン・造形温度・FEP の状態ごとに露光時間を記録し、RERF テストから推奨値を割り出すツール";
+  "1.6秒から4.4秒まで露光時間を変えた8枚の試験片が並ぶ図。短い側は「未硬化」で穴が大きく縁が荒れ、長い側は「過硬化」で穴が埋まっていく。中央の3枚が「良好域」で、その下限にあたる2.8秒に「推奨」と示されている。";
 
 // 検索エンジンに「何をするページか」を機械可読で渡す。露光条件を扱う計算ツールなので、
 // 無料であること（offers ¥0）と端末内で完結することまで含めて明示する。

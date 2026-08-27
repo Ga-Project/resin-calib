@@ -1,11 +1,7 @@
 name: Deploy to GitHub Pages
 
-# 注意: このワークフローは「単独 public リポへ切り出した後」にのみ有効。
-# モノレポ配下では GitHub Actions は repo ルートの .github/workflows のみを実行するため、
-# サブディレクトリにある本ファイルは非実行（inert）になる。
-#
-# 公開前ゲート → ビルド → Pages 公開を1つの workflow で直列化する。
-# secret-scan が落ちたら build は skip され、Pages には何も公開されない
+# 検査 → ビルド → Pages 公開を1つの workflow で直列化する。
+# secret-scan が落ちたら build は skip され、Pages には何も公開されない。
 
 on:
   push:

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8" />
+<title>resin-calib og card</title>
+<!--
+  共有カード（og:image）の原版。1200×630 で書き出して public/og.png にする。
+  書き出しは ./scripts/og-card.sh（Chrome ヘッドレスのスクリーンショット）。
+
+  意匠は resin-calib の顔（theme.css）に揃える。汎用の告知テンプレは使わない。
+    - UV バイオレット/オーキッド（accent h288）＝ 405nm の UV 硬化を象徴する色
+    - 寒色スレート（neutral h250）の暗い面 ＝ 造形チャンバー内の暗所
+    - radius 10px の端正な角 ＝ 計器的な硬さ
+  絵の中身は RERF（露光テスト）そのもの: 露光量を段階的に変えた試験片を並べ、
+  細部（穴）が潰れる／太る手前の 1 枚が最適、という判定の仕方を絵で見せる。
+-->
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { width: 1200px; height: 630px; }
+
+  body {
+    /* 造形チャンバーの暗所に、下から LCD の UV が差す。 */
+    background:
+      radial-gradient(115% 78% at 50% 122%, hsl(288 62% 40% / .60) 0%, hsl(288 60% 30% / .22) 38%, transparent 70%),
+      linear-gradient(178deg, hsl(250 22% 12%) 0%, hsl(250 24% 8%) 100%);
+    color: hsl(250 18% 96%);
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .card { position: relative; width: 1200px; height: 630px; overflow: hidden; }
+
+  /* 微細な走査線。パネルの画素感を出す（主張はさせない）。 */
+  .card::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, hsl(0 0% 100% / .022) 0 1px, transparent 1px 4px);
+  }
+
+  /* --- 上段: ブランドと見出し ------------------------------------------- */
+  .head { position: absolute; top: 54px; left: 64px; right: 64px; }
+
+  .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .mark {
+    width: 46px; height: 46px; border-radius: 10px;
+    background: linear-gradient(145deg, hsl(288 66% 62%), hsl(316 62% 50%));
+    color: hsl(250 35% 10%);
+    font-size: 27px; font-weight: 800; line-height: 46px; text-align: center;
+    box-shadow: 0 0 22px hsl(288 70% 55% / .55);
+  }
+  .brand-name { font-size: 29px; font-weight: 700; letter-spacing: .02em; }
+  .brand-sub {
+    font-size: 19px; font-weight: 600; letter-spacing: .10em;
+    color: hsl(288 44% 78%); padding-left: 15px; margin-left: 3px;
+    border-left: 2px solid hsl(288 40% 60% / .45);
+  }
+
+  h1 { font-size: 55px; font-weight: 800; letter-spacing: -.005em; line-height: 1.24; }
+  h1 em {
+    font-style: normal;
+    color: hsl(288 78% 74%);
+    text-shadow: 0 0 26px hsl(288 80% 60% / .5);
+  }
+  .lead { margin-top: 18px; font-size: 24px; font-weight: 500; color: hsl(250 16% 76%); }
+
+  /* --- 中段: RERF 露光ラダー -------------------------------------------- */
+  .ladder { position: absolute; top: 338px; left: 64px; right: 64px; height: 192px; }
+
+  .tiles { display: flex; justify-content: space-between; align-items: flex-start; }
+
+  .tile { width: 112px; }
+
+  /* 試験片。露光が足りないと縁が甘くなり、過ぎると太って細部が埋まる。 */
+  .chip {
+    position: relative; width: 112px; height: 112px; border-radius: 10px;
+    background: linear-gradient(160deg, hsl(268 26% 34%), hsl(258 24% 24%));
+    border: 1px solid hsl(288 30% 62% / .32);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+    place-content: center; padding: 20px;
+  }
+  /* 細部（穴）。ここが読めるかどうかが RERF の判定そのもの。 */
+  .chip i { display: block; width: 22px; height: 22px; border-radius: 50%; background: hsl(250 30% 12%); }
+
+  /* 露光不足: 縁も穴も甘い */
+  .u3 .chip { filter: blur(2.6px) brightness(.62); opacity: .5; transform: scale(.9); }
+  .u2 .chip { filter: blur(1.5px) brightness(.76); opacity: .68; transform: scale(.95); }
+  .u1 .chip { filter: blur(.7px)  brightness(.9);  opacity: .85; transform: scale(.98); }
+
+  /* 最適: 縁が立ち、穴が丸く抜ける */
+  .ok .chip {
+    border-color: hsl(288 80% 72%);
+    box-shadow: 0 0 0 3px hsl(288 78% 62% / .55), 0 0 34px hsl(288 80% 58% / .55);
+    background: linear-gradient(160deg, hsl(288 34% 42%), hsl(272 30% 28%));
+  }
+
+  /* 露光過多: 硬化が回り込み穴が埋まっていく */
+  .o1 .chip { filter: brightness(1.24) saturate(.8); }
+  .o1 .chip i { width: 17px; height: 17px; }
+  .o2 .chip { filter: brightness(1.5) saturate(.55); }
+  .o2 .chip i { width: 11px; height: 11px; }
+  .o3 .chip { filter: brightness(1.78) saturate(.3); }
+  .o3 .chip i { width: 5px; height: 5px; opacity: .5; }
+  .o4 .chip { filter: brightness(2.0) saturate(.14); }
+  .o4 .chip i { opacity: 0; }
+
+  .sec {
+    margin-top: 14px; text-align: center;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 21px; font-weight: 600; color: hsl(250 14% 62%);
+  }
+  .ok .sec { color: hsl(288 78% 78%); }
+
+  .badge {
+    margin-top: 7px; text-align: center;
+    font-size: 17px; font-weight: 700; letter-spacing: .06em;
+    color: hsl(288 80% 78%);
+  }
+
+  /* --- 下段: 前提 -------------------------------------------------------- */
+  .foot {
+    position: absolute; left: 64px; bottom: 44px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .pill {
+    font-size: 20px; font-weight: 600; color: hsl(250 16% 80%);
+    background: hsl(250 20% 100% / .07);
+    border: 1px solid hsl(250 20% 100% / .13);
+    border-radius: 999px; padding: 9px 20px;
+  }
+</style>
+
+<div class="card">
+  <div class="head">
+    <div class="brand">
+      <span class="mark">R</span>
+      <span class="brand-name">レジンキャリブ</span>
+      <span class="brand-sub">光造形 露光キャリブレーション</span>
+    </div>
+    <h1>露光の<em>最適解</em>を、勘で探さない。</h1>
+    <p class="lead">機種 × レジン × 造形温度 × FEP の状態ごとに記録して、次から迷わない。</p>
+  </div>
+
+  <div class="ladder">
+    <div class="tiles">
+      <div class="tile u3"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">1.6s</div></div>
+      <div class="tile u2"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">2.0s</div></div>
+      <div class="tile u1"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">2.4s</div></div>
+      <div class="tile ok"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">2.8s</div><div class="badge">最適</div></div>
+      <div class="tile o1"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">3.2s</div></div>
+      <div class="tile o2"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">3.6s</div></div>
+      <div class="tile o3"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">4.0s</div></div>
+      <div class="tile o4"><div class="chip"><i></i><i></i><i></i><i></i></div><div class="sec">4.4s</div></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="pill">RERF テストから推定</span>
+    <span class="pill">端末内に保存</span>
+    <span class="pill">登録不要・無料</span>
+  </div>
+</div>
+
+<script>
+  // 書き出し前のレイアウト検査。寸法やファイルサイズでは拾えず、目視でも取りこぼす
+  // 種類の破綻（はみ出し・主要ブロックの重なり）を機械的に落とす。
+  // 結果は div#overflow-report に入れ、og-card.sh がそれだけを読む。
+  window.addEventListener("load", function () {
+    var bad = [];
+
+    // --- 1. はみ出し ---
+    document.querySelectorAll(".card *").forEach(function (el) {
+      if (el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1) {
+        bad.push("横はみ出し " + (el.className || el.tagName) +
+                 "(" + el.scrollWidth + ">" + el.clientWidth + ")");
+      }
+      if (el.clientHeight > 0 && el.scrollHeight > el.clientHeight + 1) {
+        bad.push("縦はみ出し " + (el.className || el.tagName) +
+                 "(" + el.scrollHeight + ">" + el.clientHeight + ")");
+      }
+    });
+
+    // --- 2. 重なり（絶対配置の主要ブロック同士） ---
+    // 3 段は互いに重なってはいけない。意図的に重ねている装飾は含めない。
+    var names = [".head", ".ladder", ".foot"];
+    var boxes = names.map(function (s) {
+      var el = document.querySelector(s);
+      return el ? { name: s, r: el.getBoundingClientRect() } : null;
+    }).filter(Boolean);
+
+    for (var i = 0; i < boxes.length; i++) {
+      for (var j = i + 1; j < boxes.length; j++) {
+        var a = boxes[i].r, b = boxes[j].r;
+        // 丸め誤差で隣接を交差と誤検出しないよう 1px の余裕を持たせる。
+        var dx = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+        var dy = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+        if (dx > 1 && dy > 1) {
+          bad.push("重なり " + boxes[i].name + "×" + boxes[j].name +
+                   "(" + Math.round(dx) + "×" + Math.round(dy) + "px)");
+        }
+      }
+    }
+
+    // --- 3. カード外への飛び出し ---
+    boxes.forEach(function (b) {
+      if (b.r.bottom > 631 || b.r.right > 1201 || b.r.top < -1 || b.r.left < -1) {
+        bad.push("枠外 " + b.name + "(" + Math.round(b.r.left) + "," + Math.round(b.r.top) +
+                 " " + Math.round(b.r.right) + "," + Math.round(b.r.bottom) + ")");
+      }
+    });
+
+    var m = document.createElement("div");
+    m.id = "overflow-report";
+    m.hidden = true;
+    m.textContent = bad.length ? "LAYOUT_FAIL:" + bad.join(" / ") : "LAYOUT_OK";
+    document.body.appendChild(m);
+  });
+</script>
+</html>

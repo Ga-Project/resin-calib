@@ -54,6 +54,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
       - run: pnpm build
         # プロジェクトページ（owner.github.io/resin-calib/）配信のため
         # アセットをサブパス基準で出力する。
@@ -61,6 +63,10 @@ jobs:
         env:
           PAGES_BASE_PATH: /resin-calib
           NEXT_PUBLIC_GOATCOUNTER_CODE: ga-project
+      # テストは build の後に置く。test/guards.test.mjs が out/ を検査するため
+      # （クライアントバンドルへの公開 URL 漏れ・共有カードや構造化データと画面のズレは、
+      #   書き出した結果を見ないと判定できない）。
+      - run: pnpm test
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out
